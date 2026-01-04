@@ -577,11 +577,11 @@
                 <h2>Access The "Digital Witness"</h2>
                 <p style="color:var(--muted-text); margin-bottom:30px;">Access the pilot data. Underwrite with confidence. We are currently onboarding partners for our Q2 2026 Pilot.</p>
                 
-                <form action="https://formspree.io/f/PLACEHOLDER_FOR_YOUR_ID" method="POST">
+                <form id="contactForm">
                     
                     <div class="form-group">
                         <label>Organization Name</label>
-                        <input type="text" name="organization" placeholder="e.g. Acme Insurance Group" required>
+                        <input type="text" name="orgName" placeholder="e.g. Acme Insurance Group" required>
                     </div>
 
                     <div class="form-group">
@@ -596,7 +596,7 @@
 
                     <div class="form-group">
                         <label>Corporate Email</label>
-                        <input type="email" name="email" placeholder="name@company.com" required>
+                        <input type="email" name="inputEmail" placeholder="name@company.com" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary submit-btn">Request Portal Access</button>
@@ -653,6 +653,27 @@
             if (event.target.className === "modal") { event.target.style.display = "none"; }
         }
     </script>
-
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+        
+          const formData = new FormData(this);
+            const google_sheet_url = "https://script.google.com/macros/s/AKfycbyulkYHs3O5giurI-sA6KsP9iLQbWrAMD9XPMcW_UKd9ndFob4_LHsuoPN7MCdl7d9kGQ/exec"
+          fetch(google_sheet_url, {
+            method: "POST",
+            body: formData
+          })
+          .then(() => {
+            alert("Form submitted successfully!");
+            this.reset();
+          })
+          .catch(err => {
+            console.error(err);
+            alert("Submission failed");
+          });
+        });
+        </script>
+        
+        
 </body>
 </html>
