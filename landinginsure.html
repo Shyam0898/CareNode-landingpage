@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareNode Risk Engine | ApexIntegrity Ltd</title>
+    <style>
+        /* CORE STYLING - Dark Mode / Tech Theme */
+        :root {
+            --bg-dark: #0B1120; /* Deep Navy */
+            --bg-light: #F8FAFC; /* Very light grey/white */
+            --text-light: #E2E8F0;
+            --text-dark: #1E293B;
+            --accent-color: #00C3FF; /* Neon Blue */
+            --secondary-dark: #334155;
+            --secondary-light: #CBD5E1;
+            --muted-text: #94A3B8;
+            --success-color: #00EDB3;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        /* UTILITY CLASSES FOR SECTIONS */
+        
+        /* Standard Dark Section (Used for Contact/Dashboard) */
+        .section-dark {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 80px 0;
+            /* Starfield Pattern */
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
+            background-size: 550px 550px, 350px 350px;
+            background-position: 0 0, 40px 60px;
+        }
+
+        /* NEW: Specialized Hero Section with Subtle Shine */
+        .section-dark-hero {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 0;
+            position: relative;
+            /* Layered Backgrounds: Subtle Neon Shine on top of Starfield */
+            background-image: 
+                /* Layer 1: The subtle shine originating from top center (where logo is) */
+                radial-gradient(
+                    ellipse at 50% 0%, 
+                    rgba(0, 195, 255, 0.15) 0%, /* Subtle neon center */
+                    rgba(0, 195, 255, 0.02) 40%, /* Fading out gently */
+                    transparent 75%
+                ),
+                /* Layer 2 & 3: The original starfield pattern underneath */
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px);
+            
+            background-size: 100% 100%, 550px 550px, 350px 350px;
+            background-position: center top, 0 0, 40px 60px;
+            background-repeat: no-repeat, repeat, repeat;
+        }
+
+        .section-light {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            padding: 80px 0;
+            border-top: 1px solid var(--secondary-light);
+            border-bottom: 1px solid var(--secondary-light);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative; /* Ensure content sits above background effects */
+            z-index: 2;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            /* Slightly increased transparency for the header background to let the shine through slightly */
+            background: rgba(11, 17, 32, 0.85); 
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white; 
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 15px; 
+        }
+
+        .logo-text { display: inline-block; }
+        .logo .highlight { color: var(--accent-color); }
+        
+        .logo .subtitle {
+            font-size: 0.7em;
+            color: var(--muted-text);
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-left: 1px solid var(--secondary-dark);
+            padding-left: 15px;
+        }
+
+        nav a {
+            color: var(--muted-text);
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover { color: var(--accent-color); }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #000;
+        }
+
+        .btn-secondary {
+            border: 1px solid var(--secondary-dark);
+            color: white;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 195, 255, 0.2);
+        }
+
+        /* SECTION 1: HERO (DARK) */
+        .hero { text-align: center; padding-top: 40px; padding-bottom: 40px; }
+
+        .live-badge {
+            display: inline-block;
+            background: rgba(0, 195, 255, 0.1); 
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 195, 255, 0.2); 
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, #94A3B8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--muted-text);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* TRUST BAR (On Dark) */
+        .trust-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+            color: var(--muted-text);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .trust-bar span { color: white; font-weight: bold; }
+
+        /* SECTION 2: STATS (LIGHT) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        /* Light Theme Card */
+        .card-light {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .card-light h3 {
+            color: #0284C7; /* Darker Blue for light bg */
+            font-size: 1.2rem;
+            margin-top: 0;
+        }
+
+        .card-light p { color: #64748B; font-size: 0.95rem; }
+
+        /* SECTION 3: DASHBOARD (DARK) */
+        .tech-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .tech-text h2 { font-size: 2.5rem; margin-bottom: 30px; }
+        .feature-item { margin-bottom: 30px; }
+        .feature-item h4 { margin-bottom: 5px; color: white; font-size: 1.1rem; }
+
+        /* DASHBOARD UI */
+        .dashboard-ui {
+            background: #1e293b;
+            border-radius: 15px;
+            border: 1px solid var(--secondary-dark);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .dash-header {
+            background: #0f172a;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--secondary-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dash-title { font-size: 0.9rem; font-weight: bold; color: white; }
+        .dash-id { font-size: 0.8rem; color: var(--muted-text); background: #334155; padding: 2px 8px; border-radius: 4px; }
+
+        .dash-body { padding: 25px; }
+
+        .score-container { text-align: center; margin-bottom: 25px; }
+        .big-score { font-size: 3rem; font-weight: bold; color: var(--success-color); line-height: 1; }
+        .score-label { color: var(--success-color); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; font-weight: bold; }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+
+        .metric-label { color: var(--muted-text); }
+        .metric-value { color: white; font-weight: bold; }
+        
+        .verification-badge {
+            background: rgba(0, 237, 179, 0.1);
+            color: var(--success-color);
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* SECTION 4: PARTNERS (LIGHT) */
+        .partners-header { text-align: center; margin-bottom: 40px; }
+        .partners-header h2 { color: var(--text-dark); font-size: 2.5rem; margin-bottom: 10px; }
+        
+        .partners-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .partner-col-light {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .partner-col-light h3 { margin-top: 0; color: #0F172A; }
+        .partner-col-light ul { padding-left: 20px; color: #475569; }
+        .partner-col-light li { margin-bottom: 10px; }
+
+        /* SECTION 5: FORM (DARK) */
+        .form-section {
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 100%);
+            padding: 60px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid var(--secondary-dark);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--muted-text); }
+
+        input[type="text"], input[type="email"], select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--secondary-dark);
+            background: #000;
+            color: white;
+            box-sizing: border-box; 
+        }
+
+        input:focus, select:focus { outline: none; border-color: var(--accent-color); }
+
+        .submit-btn { width: 100%; margin-top: 10px; }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            color: var(--muted-text);
+            font-size: 0.8rem;
+            padding: 40px 0;
+            background-color: #020617; /* Very dark navy */
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .footer-links { margin-top: 20px; }
+        .footer-links button {
+            background: none;
+            border: none;
+            color: var(--muted-text);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.8rem;
+            margin: 0 10px;
+            padding: 0;
+        }
+        .footer-links button:hover { color: var(--accent-color); }
+
+        /* MODAL (PRIVACY/TERMS) */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            color: #1E293B;
+            margin: 10% auto; 
+            padding: 40px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover { color: #000; }
+        .modal-content h2 { margin-top: 0; }
+        .modal-content h3 { font-size: 1.1rem; margin-top: 20px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .tech-split { grid-template-columns: 1fr; }
+            .partners-grid { grid-template-columns: 1fr; }
+            .form-section { padding: 30px; }
+            .logo { flex-direction: column; gap: 5px; align-items: flex-start; }
+            .logo .subtitle { border-left: none; padding-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="section-dark-hero">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <div class="logo-text">Care<span class="highlight">Node</span></div>
+                    <span class="subtitle">RISK ENGINE</span>
+                </div>
+                <nav>
+                    <a href="#dashboard">Live Dashboard</a>
+                    <a href="#partners">Partner Access</a>
+                </nav>
+            </header>
+
+            <section class="hero">
+                <div class="live-badge">● SECURE IMMUTABLE LEDGER</div>
+                
+                <h1>Stop Underwriting<br>In The Dark.</h1>
+                
+                <p>Social care risk is a "Black Box." CareNode cracks it open with a forensic, immutable data stream—enabling dynamic pricing and robust claim defense.</p>
+                
+                <div>
+                    <a href="#contact" class="btn btn-primary">Request Portal Access</a>
+                    <a href="#dashboard" class="btn btn-secondary">See Risk Dashboard</a>
+                </div>
+
+                <div class="trust-bar">
+                    <div>Designed to <span>BS 10008 Standards</span></div>
+                    <div style="margin: 0 20px;">•</div>
+                    <div>Live: <span>Verified Risk Stream</span></div>
+                    <div style="margin: 0 20px;">•</div>
+                    <div>Supports <span>CQC Regulation 17</span></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="section-light">
+        <div class="container">
+            <section class="stats-grid">
+                <div class="card-light">
+                    <span class="stat-number">35%</span>
+                    <h3>Staff Turnover</h3>
+                    <p>Staff churn drives negligence claims. We track real-time operational continuity to flag hidden risks.</p>
+                </div>
+                <div class="card-light">
+                    <span class="stat-number">Zero</span>
+                    <h3>Retroactive Edits</h3>
+                    <p>Our DLT architecture makes backdating records immutable and immediately detectable.</p>
+                </div>
+                <div class="card-light">
+                    <span class="stat-number">Real-Time</span>
+                    <h3>Risk Visibility</h3>
+                    <p>Move from annual renewals to dynamic, data-driven policy adjustments based on verified operational data.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="section-dark" id="dashboard">
+        <div class="container">
+            <section class="tech-split">
+                <div class="tech-text">
+                    <h2>From "Trust Me"<br>to "Verify Me"</h2>
+                    <p style="color:var(--muted-text); margin-bottom:30px;">Current claims rely on PDF exports that can be manipulated. CareNode acts as a forensic utility layer that sits between the Care Home and the Insurer.</p>
+
+                    <div class="feature-item">
+                        <h4>Source-Level Integrity (Patent Pending)</h4>
+                        <p style="font-size:0.9rem; color:var(--muted-text);">Risk data is cryptographically sealed at the hardware source. This creates an unbroken chain of custody that claims handlers can legally rely on.</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <h4>The Governance Score</h4>
+                        <p style="font-size:0.9rem; color:var(--muted-text);">We aggregate thousands of data points into a simple "Green/Amber/Red" integrity score, accessible via our secure Underwriter Portal.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-ui">
+                    <div class="dash-header">
+                        <span class="dash-title">RISK ASSESSMENT</span>
+                        <span class="dash-id">PROVIDER: CH-1849</span>
+                    </div>
+                    <div class="dash-body">
+                        <div class="score-container">
+                            <div class="big-score">98.5</div>
+                            <div class="score-label">LOW RISK TIER</div>
+                        </div>
+                        
+                        <div class="metric-row">
+                            <span class="metric-label">Immutable Logs (24h)</span>
+                            <span class="metric-value">412</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Incident Response (Avg)</span>
+                            <span class="metric-value">4.2 min</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Retroactive Edits</span>
+                            <span class="metric-value" style="color:var(--accent-color);">0 DETECTED</span>
+                        </div>
+
+                        <div class="verification-badge">
+                            <span style="font-size:1.1rem;">✔</span> HEDERA CONSENSUS VERIFIED
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="section-light" id="partners">
+        <div class="container">
+            <div class="partners-header">
+                <h2>The "Verified Risk" Partnership</h2>
+                <p style="color:#64748B;">A shared value model for Intermediaries and Carriers.</p>
+            </div>
+            <div class="partners-grid">
+                <div class="partner-col-light">
+                    <h3>For The Broker</h3>
+                    <ul>
+                        <li>Differentiate your product with "Tech-Enabled" policies.</li>
+                        <li>Justify premium reductions with hard evidence.</li>
+                        <li>Retain clients by offering the CareNode tool as a value-add.</li>
+                    </ul>
+                </div>
+                <div class="partner-col-light">
+                    <h3>For The Underwriter</h3>
+                    <ul>
+                        <li>Reduce exposure to fraudulent or exaggerated claims.</li>
+                        <li>Automate compliance checks (Reg 17).</li>
+                        <li>Access the "Black Box" of daily operational risk.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-dark" id="contact">
+        <div class="container">
+            <section class="form-section">
+                <h2>Access The "Digital Witness"</h2>
+                <p style="color:var(--muted-text); margin-bottom:30px;">Access the pilot data. Underwrite with confidence. We are currently onboarding partners for our Q2 2026 Pilot.</p>
+                
+                <form action="https://formspree.io/f/PLACEHOLDER_FOR_YOUR_ID" method="POST">
+                    
+                    <div class="form-group">
+                        <label>Organization Name</label>
+                        <input type="text" name="organization" placeholder="e.g. Acme Insurance Group" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="role">
+                            <option value="Director">Underwriting Director</option>
+                            <option value="Broker">Broker / Intermediary</option>
+                            <option value="Actuary">Actuarial Analyst</option>
+                            <option value="Claims">Claims Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Corporate Email</label>
+                        <input type="email" name="email" placeholder="name@company.com" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary submit-btn">Request Portal Access</button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 ApexIntegrity Ltd. All rights reserved.</p>
+            <p style="margin-top:5px; color:#64748B;">CareNode is a trading name of ApexIntegrity Ltd. • Built on Hedera Hashgraph.</p>
+            <div class="footer-links">
+                <button onclick="openModal('privacyModal')">Privacy Policy</button> | 
+                <button onclick="openModal('termsModal')">Terms of Use</button>
+            </div>
+        </div>
+    </footer>
+
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>Privacy Policy</h2>
+            <p><strong>Last Updated: December 2025</strong></p>
+            <p>ApexIntegrity Ltd ("We", "Us") respects your privacy. This policy outlines how we handle your data when you request access to the CareNode pilot.</p>
+            <h3>1. Information We Collect</h3>
+            <p>We collect your Name, Organization, Job Role, and Corporate Email address via the contact form on this page.</p>
+            <h3>2. Purpose of Collection</h3>
+            <p>We use this data solely to assess your eligibility for our Pilot Program and to contact you regarding CareNode services. We do not sell your data to third parties.</p>
+            <h3>3. Data Storage</h3>
+            <p>Your data is processed securely. As we operate in the UK, we adhere to the UK GDPR and Data Protection Act 2018.</p>
+            <h3>4. Your Rights</h3>
+            <p>You have the right to request access to, or deletion of, your data. Contact: shyam@apexintegrityltd.co.uk.</p>
+        </div>
+    </div>
+
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('termsModal')">&times;</span>
+            <h2>Terms of Use</h2>
+            <h3>1. Pilot Availability</h3>
+            <p>The CareNode "Digital Witness" system is currently in a pre-release Pilot phase. Submission of the contact form does not guarantee acceptance into the pilot.</p>
+            <h3>2. Intellectual Property</h3>
+            <p>CareNode, the "Edge-Hashing" architecture, and "Digital Witness" methodology are the intellectual property of ApexIntegrity Ltd. Aspects of this technology are Patent Pending.</p>
+            <h3>3. Disclaimer</h3>
+            <p>The Risk Scores provided in the demo dashboard are for illustrative purposes. While the system is designed to BS 10008 standards, legal admissibility is ultimately determined by the courts.</p>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).style.display = "block"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        window.onclick = function(event) {
+            if (event.target.className === "modal") { event.target.style.display = "none"; }
+        }
+    </script>
+
+</body>
+</html>
