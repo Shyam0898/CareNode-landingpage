@@ -526,21 +526,21 @@
             </div>
 
             <div class="form-container">
-                <form action="https://formspree.io/f/PLACEHOLDER_FOR_YOUR_ID" method="POST">
+                <form id="contactForm">
                     
                     <div style="margin-bottom:20px;">
                         <label style="display:block; margin-bottom:8px; font-size:0.95rem; color:var(--text-headers); font-weight:600;">Care Home Name</label>
-                        <input type="text" name="care_home_name" required placeholder="Enter Organization Name">
+                        <input type="text" name="homeName" required placeholder="Enter Organization Name">
                     </div>
 
                     <div style="margin-bottom:20px;">
                         <label style="display:block; margin-bottom:8px; font-size:0.95rem; color:var(--text-headers); font-weight:600;">Manager Email</label>
-                        <input type="email" name="email" required placeholder="name@carehome.co.uk">
+                        <input type="email" name="mngrEmail" required placeholder="name@carehome.co.uk">
                     </div>
 
                     <div style="margin-bottom:20px;">
                         <label style="display:block; margin-bottom:8px; font-size:0.95rem; color:var(--text-headers); font-weight:600;">Current Bed Count</label>
-                        <select name="bed_count">
+                        <select name="bedCount">
                             <option value="" disabled selected>Select capacity...</option>
                             <option value="10-30">10-30 Beds</option>
                             <option value="30-60">30-60 Beds</option>
@@ -604,6 +604,28 @@
             if (event.target.className === "modal") { event.target.style.display = "none"; }
         }
     </script>
+
+<script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+    
+      const formData = new FormData(this);
+        const google_form_url = "https://script.google.com/macros/s/AKfycby9EujT5oUBd3tGNyDg3tTU9hFNjB3RT6fn0bzMCssXqIGMj74REHKFgU2c9-S1n1blpg/exec"
+      fetch(google_form_url, {
+        method: "POST",
+        body: formData
+      })
+      .then(() => {
+        alert("Form submitted successfully!");
+        this.reset();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Submission failed");
+      });
+    });
+    </script>
+    
 
 </body>
 </html>
